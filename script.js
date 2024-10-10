@@ -47,23 +47,44 @@ document.addEventListener('DOMContentLoaded', function () {
         addName();
         addImg();
         addFaculty();
-        
+        addSaveButton();
+        addEditButton();
+        addDeleteButton();
 
 
         // card.innerHTML = `
-        
-        
+
+
         // <button class="save-button" >Save</button>
         // <button class="delete-button" >Delete</button>
         // <button class="edit-button" >Edit</button>
         // `;
 
         return card;
+        
+        function addSaveButton() {
+            const tag = document.createElement('button');
+            tag.innerText = 'Save';
+            card.appendChild(tag);
+        }
 
-        function addFaculty(){
+        function addDeleteButton() {
+            const tag = document.createElement('button');
+            tag.innerText = 'Delete';
+            card.appendChild(tag);
+        }
+
+        function addEditButton() {
+            const tag = document.createElement('button');
+            tag.innerText = 'Edit';
+            card.appendChild(tag);
+        }
+
+
+        function addFaculty() {
             const tag = document.createElement('p');
             tag.innerText = s.faculty;
-            card.appendChild(tag);            
+            card.appendChild(tag);
         }
 
         function addName() {
@@ -75,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
         function addImg() {
             const tag = document.createElement('img');
             tag.setAttribute('src', s.imageUrl);
-            tag.setAttribute('alt', s.name+ " photo");
+            tag.setAttribute('alt', s.name + " photo");
             card.appendChild(tag);
         }
     }
