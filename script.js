@@ -51,15 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
         addEditButton();
         addDeleteButton();
 
-
-        // card.innerHTML = `
-
-
-        // <button class="save-button" >Save</button>
-        // <button class="delete-button" >Delete</button>
-        // <button class="edit-button" >Edit</button>
-        // `;
-
         return card;
         
         function addSaveButton() {
@@ -79,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function () {
             tag.innerText = 'Edit';
             card.appendChild(tag);
         }
-
 
         function addFaculty() {
             const tag = document.createElement('p');
