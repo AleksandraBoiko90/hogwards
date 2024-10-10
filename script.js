@@ -46,12 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         addName();
         addImg();
+        addFaculty();
+        
 
 
         // card.innerHTML = `
-        // <img src="${s.imageUrl}" alt="${s.name}" style="height:100px;">
-        // <h3>${s.name}</h3>
-        // <p>Faculty: ${s.faculty}</p>
         
         
         // <button class="save-button" >Save</button>
@@ -61,12 +60,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return card;
 
+        function addFaculty(){
+            const tag = document.createElement('p');
+            tag.innerText = s.faculty;
+            card.appendChild(tag);            
+        }
 
         function addName() {
             const tag = document.createElement('h3');
             tag.innerText = s.name;
             card.appendChild(tag);
         }
+
         function addImg() {
             const tag = document.createElement('img');
             tag.setAttribute('src', s.imageUrl);
