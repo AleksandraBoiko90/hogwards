@@ -44,15 +44,31 @@ document.addEventListener('DOMContentLoaded', function () {
         card.classList.add('student-card');
         // card.style.backgroundColor = getFacultyColor(s.faculty);
 
-        addName();
         addImg();
+        addName();
+        addAlternativeNames();
+        addAge();
         addFaculty();
         addSaveButton();
         addEditButton();
         addDeleteButton();
 
         return card;
-        
+
+        function addAge() {
+            appendChildAndSetInnerText(card, 'p', s.age);
+        } 
+
+        function addAlternativeNames() {
+            if (s.alternate_names.length === 0) {
+                return;
+            }
+            const ul = document.createElement('ul');
+            s.alternate_names.forEach((name) =>
+                appendChildAndSetInnerText(ul, 'li', name));
+            card.appendChild(ul);
+        }
+
         function addSaveButton() {
             const tag = document.createElement('button');
             tag.innerText = 'Save';
@@ -92,7 +108,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-
+    function appendChildAndSetInnerText(parent, tagName, innerText) {
+        const tag = document.createElement(tagName);
+        tag.innerText = innerText;
+        parent.appendChild(tag);
+    }
 
 
 });//document.addEventListener('DOMContentLoaded', function () {
