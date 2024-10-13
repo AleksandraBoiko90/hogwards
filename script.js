@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-    fetchStudents().then(students => {
-        displayStudents(students);
-
-
-    });
+    let students = [];
+    fetchStudents().then(displayStudents);
+ 
 
     function fetchStudents() {
         let url = 'https://hp-api.onrender.com/api/characters/students';
@@ -12,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 const currentYear = (new Date()).getFullYear();
-                const students = data.map(s => {
+                students = data.map(s => {
                     return {
                         id: s.id,
                         name: s.name,
@@ -23,12 +21,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         wand: s.wand
                     };
                 });
-                return students;
             });
 
     }
 
-    function displayStudents(students) {
+    function displayStudents() {
 
         const container = document.querySelector('.students-container');
         students.forEach(s => {
