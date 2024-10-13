@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         faculty: s.house,
                         imageUrl: s.image,
                         alternate_names: s.alternate_names,
-                        age: currentYear - s.yearOfBirth,
+                        age: s.yearOfBirth? (currentYear - s.yearOfBirth) : '-',
                         wand: s.wand
                     };
                 });
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function addAge() {
-            appendChildAndSetInnerText(card, 'p', s.age);
+            appendChildAndSetInnerText(card, 'p', 'Age: ' + s.age);
         } 
 
         function addAlternativeNames() {
