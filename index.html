@@ -21,9 +21,54 @@
             <span>sort by age:</span>
             <a class="sort-by-age-asc" href="">asc</a>
             <a class="sort-by-age-desc" href="">desc</a>
-            <a class="sort-by-age-unsorted"  href="">no</a>
+            <a class="sort-by-age-unsorted" href="">no</a>
         </span>
+        <button class="add-student-button">add student</button>
     </nav>
+
+
+    <form class="add-edit-student-form">
+        <h1></h1>
+        <div class="row">
+            <div class="col">
+                <label>name</label>
+                <input type="text" name="name" placeholder="enter name">
+            </div>
+            <div class="col">
+                <label>age</label>
+                <input type="number" name="age">
+
+            </div>
+            <div class="col">
+                <label>faculty</label>
+                <select name="faculty">
+                    <option value="gryffindor">Gryffindor</option>
+                    <option value="slytherin">Slytherin</option>
+                    <option value="hufflepuff">Hufflepuff</option>
+                    <option value="ravenclaw">Ravenclaw</option>
+                </select>
+
+            </div>
+        </div>
+        <div class="row">
+            <label>wand</label>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label>wood</label>
+                <input type="text" name="wand_wood">
+            </div>
+            <div class="col">
+                <label>core</label>
+                <input type="text" name="wand_core">
+            </div>
+            <div class="col">
+                <label>length</label>
+                <input type="number" name="wand_length">
+            </div>
+        </div>
+        <input type="submit" value="save">
+    </form>
 
 
     <h1>Students</h1>

@@ -1,11 +1,60 @@
 document.addEventListener('DOMContentLoaded', function () {
     let studentsFromApi = [];
+    let userStudents = [];
     let filter = null;
     let sortByAge = null;
 
     fetchStudents().then(displayStudents);
     initFilterByFaculty();
     initSortByAge();
+    initAddStudent();
+
+    function initAddStudent() {
+        const addEditStudentForm = document.querySelector('.add-edit-student-form');
+        const button = document.querySelector('.add-student-button');
+        let studentFormMode = null;
+        button.onclick = () => {
+            studentFormMode = 'add';
+            addEditStudentForm.querySelector('h1').innerText = 'add new student';
+            addEditStudentForm.style.display = 'block';
+        };
+
+        addEditStudentForm.onsubmit = onAddEditStudentFormSubmit;
+
+        function onAddEditStudentFormSubmit(e) {
+            e.preventDefault();
+            form = e.target;
+            switch (studentFormMode) {
+                case 'add':
+                    addUserStudent(makeStudentFromForm(form));
+                    break;
+
+                default:
+                    throw new Error("unknown studentFormMode: " + studentFormMode);
+            }
+            displayStudents();
+        }
+
+        function addUserStudent(s) {
+            userStudents.push(s);
+        }
+
+        function makeStudentFromForm({ name, age, faculty, wand_wood, wand_core, wand_length }) {
+            return {
+                name: name.value,
+                age: age.value || '-',
+                faculty: faculty.value,
+                wand: {
+                    wood: wand_wood.value,
+                    core: wand_core.value,
+                    length: wand_length.value
+                },
+                alternate_names: null,
+                imageUrl: 'img/no_photo.jpg',
+
+            }
+        }
+    }
 
     function initSortByAge() {
         ascButton = document.querySelector('.sort-by-age-asc');
@@ -87,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const container = document.querySelector('.students-container');
 
-        let allStudents = [...studentsFromApi];
+        let allStudents = [...userStudents, ...studentsFromApi];
         if (filter) {
             allStudents = allStudents.filter(s => s.faculty.toLowerCase() === filter);
         }
@@ -95,10 +144,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (sortByAge) {
             switch (sortByAge) {
                 case 'asc':
-                    allStudents.sort((a,b) => a.age - b.age);
+                    allStudents.sort((a, b) => a.age - b.age);
                     break;
                 case 'desc':
-                    allStudents.sort((a,b) => b.age - a.age);
+                    allStudents.sort((a, b) => b.age - a.age);
                     break;
 
                 default:
@@ -147,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function addAlternativeNames() {
-            if (s.alternate_names.length === 0) {
+            if (!s.alternate_names) {
                 return;
             }
             const container = document.createElement('div');

@@ -1,3 +1,7 @@
+.row {
+    display: flex;
+}
+
 
 nav {
     display: flex;
@@ -9,26 +13,43 @@ nav {
     display: flex;
     gap: 1rem;
 }
-.filter-by-faculties a{
+
+.filter-by-faculties a {
     padding: 0.1rem;
     border-style: none;
-    border: 0.15rem black  ;
-    border-radius: 20%; 
+    border: 0.15rem black;
+    border-radius: 20%;
 }
-.filter-by-faculties img{
+
+.filter-by-faculties img {
     max-height: 2rem;
 }
+
 .students-container {
     display: flex;
 
     flex-wrap: wrap;
     gap: 5rem;
 }
+
 .student-card {
     padding: 1rem;
     border-radius: 1%;
 }
-.student-card img{
+
+.student-card img {
     height: 6rem;
     border-radius: 10%;
+}
+
+
+.add-edit-student-form {
+    display: none;
+    padding: 1rem;
+}
+
+
+.add-edit-student-form .row {
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
