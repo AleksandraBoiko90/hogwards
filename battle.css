@@ -30,3 +30,7 @@
 .record.success {
     background-color: rgba(47, 255, 54, 0.24);
 }
+
+.record.danger {
+    background-color: rgba(110, 17, 17, 0.318);
+}
