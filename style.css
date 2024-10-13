@@ -35,6 +35,22 @@ nav {
 .student-card {
     padding: 1rem;
     border-radius: 1%;
+    position: relative;
+}
+
+.student-card .favourite {
+    color: red;
+    font-size: 2rem;
+    position: absolute;
+    right: 1rem;
+    
+}
+.student-card .favourite:hover {
+    font-size: 3rem;
+    right: 0.5rem;
+    cursor: pointer;
+    /* border: 1rem solid black; */
+    /* background-color: black; */
 }
 
 .student-card img {

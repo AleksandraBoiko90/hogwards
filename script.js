@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 studentsFromApi = data
                     // .slice(0, 5)
                     .map(s => {
-                    return makeStudentFromApi(s, currentYear);
+                        return makeStudentFromApi(s, currentYear);
                     });
             });
 
@@ -218,6 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
         card.classList.add('student-card');
         // card.style.backgroundColor = getFacultyColor(s.faculty);
 
+        addFavouriteButton();
         addImg();
         addName();
         addAge();
@@ -299,6 +300,15 @@ document.addEventListener('DOMContentLoaded', function () {
             tag.setAttribute('src', s.imageUrl);
             tag.setAttribute('alt', s.name + " photo");
             card.appendChild(tag);
+        }
+
+        function addFavouriteButton() {
+        const tag = document.createElement('span');
+        // tag.setAttribute("href", "");
+        tag.classList.add("favourite");
+        tag.innerText = '♡';
+        card.appendChild(tag);
+            
         }
     }
 
