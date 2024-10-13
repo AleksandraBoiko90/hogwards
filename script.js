@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
     let studentsFromApi = [];
-    let userStudents = [];
     let filter = null;
     let sortByAge = null;
 
@@ -10,16 +9,43 @@ document.addEventListener('DOMContentLoaded', function () {
     initAddStudent();
 
     function initAddStudent() {
-        const addEditStudentForm = document.querySelector('.add-edit-student-form');
-        const button = document.querySelector('.add-student-button');
         let studentFormMode = null;
-        button.onclick = () => {
+
+        const addEditStudentForm = document.querySelector('.add-edit-student-form');
+        const addButton = document.querySelector('.add-user-student');
+        addButton.onclick = (e) => {
+            e.preventDefault();
             studentFormMode = 'add';
-            addEditStudentForm.querySelector('h1').innerText = 'add new student';
-            addEditStudentForm.style.display = 'block';
+            showAddEditStudentForm();
+        };
+        const clearButton = document.querySelector('.clear-user-students');
+        clearButton.onclick = (e) => {
+            e.preventDefault();
+            clearUserStudents();
         };
 
         addEditStudentForm.onsubmit = onAddEditStudentFormSubmit;
+
+        function showAddEditStudentForm() {
+            const header = addEditStudentForm.querySelector('h1');
+            switch (studentFormMode) {
+                case 'add':
+                    header.innerText = 'add new student';
+                    break;
+                case 'edit':
+                    header.innerText = 'edit student';
+                    break;
+
+                default:
+                    throw new Error("unknown studentFormMode: " + studentFormMode);
+            }
+
+            addEditStudentForm.style.display = 'block';
+        }
+
+        function hideAddEditStudentForm() {
+            addEditStudentForm.style.display = 'none';
+        }
 
         function onAddEditStudentFormSubmit(e) {
             e.preventDefault();
@@ -33,29 +59,52 @@ document.addEventListener('DOMContentLoaded', function () {
                     throw new Error("unknown studentFormMode: " + studentFormMode);
             }
             displayStudents();
+            hideAddEditStudentForm();
         }
 
-        function addUserStudent(s) {
-            userStudents.push(s);
-        }
+    }
 
-        function makeStudentFromForm({ name, age, faculty, wand_wood, wand_core, wand_length }) {
-            return {
-                name: name.value,
-                age: age.value || '-',
-                faculty: faculty.value,
-                wand: {
-                    wood: wand_wood.value,
-                    core: wand_core.value,
-                    length: wand_length.value
-                },
-                alternate_names: null,
-                imageUrl: 'img/no_photo.jpg',
+    function clearUserStudents() {
+        localStorage.setItem('addedStudents', JSON.stringify([]));
+        displayStudents();
+    }
 
+    function getAddedStudents() {
+        return JSON.parse(localStorage.getItem('addedStudents') || '[]');
+    }
+
+    function addUserStudent(s) {
+        const addedStudents = getAddedStudents();
+        addedStudents.push(s);
+        localStorage.setItem('addedStudents', JSON.stringify(addedStudents));
+    }
+
+    function makeStudentFromForm({ name, age, faculty, wand_wood, wand_core, wand_length }) {
+        return {
+            name: name.value,
+            age: age.value ? Number(age.value) : 0,
+            faculty: faculty.value,
+            imageUrl: 'img/no_photo.jpg',
+            alternate_names: null,
+            wand: {
+                wood: wand_wood.value,
+                core: wand_core.value,
+                length: wand_length.value
             }
         }
     }
 
+    function makeStudentFromApi(s, currentYear) {
+        return {
+            // id: s.id,
+            name: s.name,
+            age: s.yearOfBirth ? currentYear - s.yearOfBirth : 0,
+            faculty: s.house,
+            imageUrl: s.image || 'img/no_photo.jpg',
+            alternate_names: s.alternate_names,
+            wand: s.wand
+        }
+    }
     function initSortByAge() {
         ascButton = document.querySelector('.sort-by-age-asc');
         ascButton.onclick = (e) => sortByAgeAsc(e);
@@ -117,18 +166,32 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 const currentYear = (new Date()).getFullYear();
-                studentsFromApi = data.map(s => {
-                    return {
-                        id: s.id,
-                        name: s.name,
-                        faculty: s.house,
-                        imageUrl: s.image || 'img/no_photo.jpg',
-                        alternate_names: s.alternate_names,
-                        age: s.yearOfBirth ? currentYear - s.yearOfBirth : '-',
-                        wand: s.wand
-                    };
-                });
+                studentsFromApi = data
+                    // .slice(0, 5)
+                    .map(s => {
+                    return makeStudentFromApi(s, currentYear);
+                    });
             });
+
+    }
+
+
+    function sortStudentsByAge(allStudents) {
+        if (!sortByAge) {
+            return;
+        }
+        switch (sortByAge) {
+            case 'asc':
+                allStudents.sort((a, b) => a.age - b.age);
+                break;
+            case 'desc':
+                allStudents.sort((a, b) => b.age - a.age);
+                break;
+
+            default:
+                throw new Error("wrong sort direction: " + sortByAge);
+
+        }
 
     }
 
@@ -136,26 +199,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const container = document.querySelector('.students-container');
 
-        let allStudents = [...userStudents, ...studentsFromApi];
+        let allStudents = [...getAddedStudents(), ...studentsFromApi];
         if (filter) {
             allStudents = allStudents.filter(s => s.faculty.toLowerCase() === filter);
         }
 
-        if (sortByAge) {
-            switch (sortByAge) {
-                case 'asc':
-                    allStudents.sort((a, b) => a.age - b.age);
-                    break;
-                case 'desc':
-                    allStudents.sort((a, b) => b.age - a.age);
-                    break;
+        sortStudentsByAge(allStudents);
 
-                default:
-                    throw new Error("wrong sort direction: " + sortByAge);
-
-            }
-
-        }
         const newCards = allStudents.map(s => createStudentCard(s));
         container.replaceChildren(...newCards);
 
@@ -192,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function addAge() {
-            appendChildAndSetInnerText(card, 'p', 'Age: ' + s.age);
+            appendChildAndSetInnerText(card, 'p', 'Age: ' + (s.age > 0 ? s.age : '-'));
         }
 
         function addAlternativeNames() {
