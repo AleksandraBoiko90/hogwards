@@ -1,0 +1,32 @@
+
+
+.players .row {
+    justify-content: space-around;
+}
+
+.player-card img {
+    height: 20rem;
+    border-radius: 10%;
+}
+
+.log {
+    height: 15rem;
+    /* background-color: aliceblue; */
+    margin: auto 10rem;
+    overflow-y: scroll;
+}
+
+.record {
+    /* background-color: burlywood; */
+    font-size: large;
+    border-radius: 1rem;
+    margin: 1rem;
+    padding: 1rem;
+}
+
+.record.info {
+    background-color: lightgray;
+}
+.record.success {
+    background-color: rgba(47, 255, 54, 0.24);
+}
