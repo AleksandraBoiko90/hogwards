@@ -3,22 +3,32 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchStudents().then(displayStudents);
     initFilterByFaculty();
 
-    function initFilterByFaculty(){
-        const buttons = document.querySelectorAll('.filter-by-faculties a');
-        buttons.forEach(b=>b.onclick = (e) => filterByFaculty(e, b));
-    }
+    function initFilterByFaculty() {
+        const buttons = [...document.querySelectorAll('.filter-by-faculties a')];
+        buttons.forEach(b => b.onclick = (e) => filterByFaculty(e, b));
+        function filterByFaculty(e, b) {
+            e.preventDefault();
+            if (isChecked(b)) {
+                uncheck([b]);
+            } else {
+                check(b);
+                uncheck(buttons.filter(btn=>btn!==b))
+            }
 
-    function filterByFaculty(e, b) {
-        e.preventDefault();
-        if (b.style.borderStyle) {
-            b.style.borderStyle = ''
-        } else {
+            const faculty = b.getAttribute('data-faculty-name');
+
+        }
+        function uncheck(buttons){
+            buttons.forEach(b=> b.style.borderStyle = '');
+        }
+        function isChecked(b){
+            return b.style.borderStyle !== '';
+        }
+        function check(b){
             b.style.borderStyle = 'solid'
         }
-
-        const faculty = b.getAttribute('data-faculty-name');
-        
     }
+
 
     function fetchStudents() {
         let url = 'https://hp-api.onrender.com/api/characters/students';
@@ -70,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
         addAlternativeNames();
         return card;
 
-        function addWandDetails(){
+        function addWandDetails() {
             const container = document.createElement('div');
             appendChildAndSetInnerText(container, 'h4', 'wand');
             const ul = document.createElement('ul');
@@ -83,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         function addAge() {
             appendChildAndSetInnerText(card, 'p', 'Age: ' + s.age);
-        } 
+        }
 
         function addAlternativeNames() {
             if (s.alternate_names.length === 0) {
