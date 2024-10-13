@@ -134,10 +134,16 @@ document.addEventListener('DOMContentLoaded', function () {
             card.appendChild(tag);
         }
 
+        function getBackgroundColor(faculty) {
+            const colors = {'gryffindor': 'orange', 'slytherin': 'green', 'hufflepuff': 'yellow', 'ravenclaw': 'blue'};
+            return colors[faculty];
+        }
+
         function addFaculty() {
             const tag = document.createElement('p');
             tag.innerText = s.faculty;
             card.appendChild(tag);
+            card.style.backgroundColor = getBackgroundColor(s.faculty.toLowerCase());
         }
 
         function addName() {
