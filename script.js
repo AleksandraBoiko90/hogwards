@@ -8,17 +8,15 @@ document.addEventListener('DOMContentLoaded', function () {
     initFilterByFaculty();
     initFilterByFavourites();
     initSortByAge();
-    initAddStudent();
+    const showEditForm = initAddEditStudentForm();
 
-    function initAddStudent() {
-        let studentFormMode = null;
+    function initAddEditStudentForm() {
 
-        const addEditStudentForm = document.querySelector('.add-edit-student-form');
+        const form = document.querySelector('.add-edit-student-form');
         const addButton = document.querySelector('.add-user-student');
         addButton.onclick = (e) => {
             e.preventDefault();
-            studentFormMode = 'add';
-            showAddEditStudentForm();
+            showAddStudentForm();
         };
         const clearButton = document.querySelector('.clear-user-students');
         clearButton.onclick = (e) => {
@@ -26,45 +24,95 @@ document.addEventListener('DOMContentLoaded', function () {
             clearAddedStudents();
         };
 
-        addEditStudentForm.onsubmit = onAddEditStudentFormSubmit;
 
-        function showAddEditStudentForm() {
-            const header = addEditStudentForm.querySelector('h1');
-            switch (studentFormMode) {
-                case 'add':
-                    header.innerText = 'add new student';
-                    break;
-                case 'edit':
-                    header.innerText = 'edit student';
-                    break;
+        const header = form.querySelector('h1');
+        const wand = form.querySelector('.wand');
 
-                default:
-                    throw new Error("unknown studentFormMode: " + studentFormMode);
-            }
+        return showEditStudentForm;
 
-            addEditStudentForm.style.display = 'block';
+        function showAddStudentForm() {
+            header.innerText = 'add new student';
+            wand.style.display = 'block';
+            form.onsubmit = onAddStudentFormSubmit;
+
+            form.style.display = 'block';
         }
 
         function hideAddEditStudentForm() {
-            addEditStudentForm.style.display = 'none';
+            form.style.display = 'none';
         }
 
-        function onAddEditStudentFormSubmit(e) {
+        function onAddStudentFormSubmit(e) {
             e.preventDefault();
-            form = e.target;
-            switch (studentFormMode) {
-                case 'add':
-                    addUserStudent(makeStudentFromForm(form));
-                    break;
-
-                default:
-                    throw new Error("unknown studentFormMode: " + studentFormMode);
+            if (e.submitter.value === 'save') {
+                addUserStudent(makeStudentFromForm(form));
+                displayStudents();
             }
+
+            hideAddEditStudentForm();
+        }
+
+        function showEditStudentForm(s) {
+            header.innerText = 'edit student';
+            wand.style.display = 'none';
+            form.onsubmit = (e) => onEditStudentFormSubmit(e, s);
+            formFromStudent(s);
+
+            form.style.display = 'block';
+        }
+
+        function formFromStudent(s) {
+
+            nameTag = form.querySelector('input[type=text][name=name]');
+            nameTag.value = s.name;
+
+            idTag = form.querySelector('input[type=hidden][name=id]');
+            idTag.value = s.id;
+
+            originTag = form.querySelector('input[type=hidden][name=origin]');
+            originTag.value = s.origin;
+
+            facultyTag = form.querySelector('select[name=faculty]');
+            facultyTag.value = s.faculty.toLowerCase();
+
+            ageTag = form.querySelector('input[type=number][name=age]');
+            ageTag.value = s.age;
+        }
+
+        function onEditStudentFormSubmit(e, oldStudent) {
+            e.preventDefault();
+            if (e.submitter.value === 'cancel') {
+                hideAddEditStudentForm();
+                return;
+            }
+
+            const newStudent = makeStudentFromForm(form);
+            copyNotOverriddenFields(newStudent, oldStudent);
+            switch (newStudent.origin) {
+                case 'added':
+                    updateAddedStudent(oldStudent, newStudent);
+                    break;
+                case 'api':
+                    updateApiStudentOverride(oldStudent, newStudent);
+                    break;
+                default:
+                    throw new Error('bad origin: ' + newStudent.origin);
+            }
+
             displayStudents();
             hideAddEditStudentForm();
         }
 
+        function copyNotOverriddenFields(dst, src) {
+            // dst.id
+            // dst.origin
+            dst.wand = src.wand;
+            dst.alternate_names = src.alternate_names;
+            dst.imageUrl = src.imageUrl;
+        }
     }
+
+
 
     function clearAddedStudents() {
         localStorage.setItem('addedStudents', JSON.stringify([]));
@@ -81,8 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function deleteAddedStudent(s) {
         const addedStudents = getAddedStudents();
         const n = addedStudents.indexOf(s);
-        addedStudents.splice(n,1);
-        localStorage.setItem('addedStudents', JSON.stringify(addedStudents));        
+        addedStudents.splice(n, 1);
+        localStorage.setItem('addedStudents', JSON.stringify(addedStudents));
     }
 
     function addUserStudent(s) {
@@ -91,9 +139,55 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('addedStudents', JSON.stringify(addedStudents));
     }
 
-    function makeStudentFromForm({ name, age, faculty, wand_wood, wand_core, wand_length }) {
+    function updateAddedStudent(oldStudent, newStudent) {
+        deleteAddedStudent(oldStudent);
+        addUserStudent(newStudent);
+    }
+
+
+    function getApiStudentsOverrides() {
+        const overrides = JSON.parse(localStorage.getItem('apiStudentsOverrides') || '{}');
+        const favourites = getFavourites();
+        Object
+            .keys(overrides)
+            .map(id => overrides[id])
+            .forEach(s => s.isFavourite = favourites.has(s.id));
+        return overrides;
+    }
+
+    function getApiStudentsOverridesValues() {
+        const overrides = getApiStudentsOverrides();
+        return Object.keys(overrides).map(id => overrides[id]);
+    }
+
+    function isOverridden(s) {
+        return s.id in getApiStudentsOverrides();
+    }
+
+    function deleteApiStudentsOverride(s) {
+        const overrides = getApiStudentsOverrides();
+        delete overrides[s.id];
+        localStorage.setItem('apiStudentsOverrides', JSON.stringify(overrides));
+    }
+
+    function addApiStudentOverride(s) {
+        const overrides = getApiStudentsOverrides();
+        overrides[s.id] = s;
+        localStorage.setItem('apiStudentsOverrides', JSON.stringify(overrides));
+    }
+
+    function updateApiStudentOverride(oldStudent, newStudent) {
+        if (isOverridden(oldStudent.id)) {
+            deleteApiStudentsOverride(oldStudent);
+        } else {
+            deleteApiStudent(oldStudent);
+        }
+        addApiStudentOverride(newStudent);
+    }
+
+    function makeStudentFromForm({ id, origin, name, age, faculty, wand_wood, wand_core, wand_length }) {
         return {
-            id: crypto.randomUUID(),
+            id: id.value || crypto.randomUUID(),
             name: name.value,
             age: age.value ? Number(age.value) : 0,
             faculty: faculty.value,
@@ -105,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 length: wand_length.value
             },
             isFavourite: false,
-            origin: 'added',
+            origin: origin.value,
         }
     }
 
@@ -177,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function initFilterByFavourites() {
         const b = document.querySelector('.filter-by-favourites');
-        b.onclick = () => { 
+        b.onclick = () => {
             filterByFavourites = !filterByFavourites;
             b.innerText = getFavouritedInnerText(filterByFavourites);
             displayStudents();
@@ -193,18 +287,23 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 const currentYear = (new Date()).getFullYear();
                 const favourites = getFavourites();
+                const overrides = getApiStudentsOverrides();
                 studentsFromApi = data
                     // .slice(0, 5)
                     .map(s => {
+                        if (s.id in overrides) {
+                            return null;
+                        }
                         return makeStudentFromApi(s, currentYear, favourites.has(s.id));
-                    });
+                    })
+                    .filter(s => s !== null);
             });
 
     }
-    
+
     function deleteApiStudent(s) {
         const n = studentsFromApi.indexOf(s);
-        studentsFromApi.splice(n,1);    
+        studentsFromApi.splice(n, 1);
     }
 
 
@@ -230,10 +329,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayStudents() {
 
         const container = document.querySelector('.students-container');
-        let allStudents = [...getAddedStudents(), ...studentsFromApi];
+        let allStudents = [...getAddedStudents(), ...studentsFromApi, ...getApiStudentsOverridesValues()];
 
         if (filterByFavourites) {
-            allStudents = allStudents.filter(s => s.isFavourite);            
+            allStudents = allStudents.filter(s => s.isFavourite);
         }
 
         if (filter) {
@@ -312,6 +411,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (isFavourite(s)) {
                     deleteFavourite(s);
                 }
+                if (isOverridden(s)) {
+                    deleteApiStudentsOverride(s);
+                }
                 displayStudents();
             };
 
@@ -321,6 +423,11 @@ document.addEventListener('DOMContentLoaded', function () {
         function addEditButton() {
             const tag = document.createElement('button');
             tag.innerText = 'Edit';
+            tag.onclick = () => {
+                showEditForm(s);
+
+            };
+
             card.appendChild(tag);
         }
 
@@ -364,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function getFavouritedInnerText(isFavourite) {
         return isFavourite ? '♥️' : '♡'
     }
-    
+
     function toggleFavourite(s, tag) {
 
         if (!s.isFavourite && !canAddFavourite()) {
