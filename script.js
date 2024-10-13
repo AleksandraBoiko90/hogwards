@@ -8,14 +8,16 @@ document.addEventListener('DOMContentLoaded', function () {
         buttons.forEach(b => b.onclick = (e) => filterByFaculty(e, b));
         function filterByFaculty(e, b) {
             e.preventDefault();
+            let faculty;
             if (isChecked(b)) {
                 uncheck([b]);
+                faculty = null;
             } else {
                 check(b);
-                uncheck(buttons.filter(btn=>btn!==b))
+                uncheck(buttons.filter(btn=>btn!==b));
+                faculty = b.getAttribute('data-faculty-name');
             }
 
-            const faculty = b.getAttribute('data-faculty-name');
             displayStudents(faculty)
 
         }
