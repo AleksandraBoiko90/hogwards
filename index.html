@@ -5,20 +5,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    
 
-    
+    <nav>
+        <span class="filter-by-faculties">
+            <a data-faculty-name="gryffindor" href=""><img src="img/gryffindor.jpg" alt=""></a>
+            <a data-faculty-name="slytherin" href=""><img src="img/slytherin.jpg" alt=""></a>
+            <a data-faculty-name="hufflepuff" href=""><img src="img/hufflepuff.jpg" alt=""></a>
+            <a data-faculty-name="ravenclaw" href=""><img src="img/ravenclaw.jpg" alt=""></a>
+        </span>
+        <span>
+            <span>sort by age:</span>
+            <a class="sort-by-age-asc" href="">asc</a>
+            <a class="sort-by-age-desc" href="">desc</a>
+            <a class="sort-by-age-unsorted" href="">no</a>
+        </span>
+        <span>
+            <span>own students:</span>
+            <a class="add-user-student" href="">add</a>
+            <a class="clear-user-students" href="">clear</a>
+            <!-- <a class="filter-user-students" href="">filter</a> -->
+        </span>
+    </nav>
 
+
+    <form class="add-edit-student-form">
+        <h1></h1>
+        <div class="row">
+            <div class="col">
+                <label>name</label>
+                <input type="text" name="name" placeholder="enter name">
+            </div>
+            <div class="col">
+                <label>age</label>
+                <input type="number" name="age">
+
+            </div>
+            <div class="col">
+                <label>faculty</label>
+                <select name="faculty">
+                    <option value="gryffindor">Gryffindor</option>
+                    <option value="slytherin">Slytherin</option>
+                    <option value="hufflepuff">Hufflepuff</option>
+                    <option value="ravenclaw">Ravenclaw</option>
+                </select>
+
+            </div>
+        </div>
+        <div class="row">
+            <label>wand</label>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label>wood</label>
+                <input type="text" name="wand_wood">
+            </div>
+            <div class="col">
+                <label>core</label>
+                <input type="text" name="wand_core">
+            </div>
+            <div class="col">
+                <label>length</label>
+                <input type="number" name="wand_length">
+            </div>
+        </div>
+        <input type="submit" value="save">
+    </form>
+
+
+    <h1>Students</h1>
     <div class="students-container">
 
     </div>
 
-    
-   
+
+
     <script src="./script.js"></script>
 </body>
 
