@@ -75,10 +75,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (s.alternate_names.length === 0) {
                 return;
             }
+            const container = document.createElement('div');
+            appendChildAndSetInnerText(container, 'h4', 'Alt names');
             const ul = document.createElement('ul');
             s.alternate_names.forEach((name) =>
                 appendChildAndSetInnerText(ul, 'li', name));
-            card.appendChild(ul);
+            container.appendChild(ul);
+            card.appendChild(container);
         }
 
         function addSaveButton() {
