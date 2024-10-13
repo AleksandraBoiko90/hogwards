@@ -1,3 +1,11 @@
 .student-card img{
-    height: 100px;
+    height: 6rem;
+}
+
+/* .filter-by-faculties {
+    display: flex;
+} */
+
+.filter-by-faculties img{
+    max-height: 2rem;
 }
