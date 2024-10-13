@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function makeStudentFromForm({ name, age, faculty, wand_wood, wand_core, wand_length }) {
         return {
+            id: crypto.randomUUID(),
             name: name.value,
             age: age.value ? Number(age.value) : 0,
             faculty: faculty.value,
@@ -90,19 +91,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 wood: wand_wood.value,
                 core: wand_core.value,
                 length: wand_length.value
-            }
+            },
+            isFavourite: false,
         }
     }
 
     function makeStudentFromApi(s, currentYear) {
         return {
-            // id: s.id,
+            id: s.id,
             name: s.name,
             age: s.yearOfBirth ? currentYear - s.yearOfBirth : 0,
             faculty: s.house,
             imageUrl: s.image || 'img/no_photo.jpg',
             alternate_names: s.alternate_names,
-            wand: s.wand
+            wand: s.wand,
+            isFavourite: false,
         }
     }
     function initSortByAge() {
@@ -303,15 +306,54 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function addFavouriteButton() {
-        const tag = document.createElement('span');
-        // tag.setAttribute("href", "");
-        tag.classList.add("favourite");
-        tag.innerText = '♡';
-        card.appendChild(tag);
-            
+            const tag = document.createElement('span');
+            tag.classList.add("favourite");
+            tag.innerText = getFavouritedInnerText(s.isFavourite);
+            tag.onclick = () => toggleFavourite(s, tag);
+            card.appendChild(tag);
+
+        }
+
+
+    }//createStudentCard
+
+    function getFavouritedInnerText(isFavourite) {
+        return isFavourite ? '♥️' : '♡'
+    }
+    function toggleFavourite(s, tag) {
+
+        if (!s.isFavourite && !canAddFavourite()) {
+            alert("can't add more favourites");
+            return;
+        }
+        s.isFavourite = !s.isFavourite;
+        tag.innerText = getFavouritedInnerText(s.isFavourite);
+        if (s.isFavourite) {
+            addFavourite(s);
+        } else {
+            deleteFavourite(s);
         }
     }
 
+    function addFavourite(s) {
+        const favourites = getFavourites();
+        favourites.add(s.id);
+        localStorage.setItem('favourites', JSON.stringify([...favourites]));
+    }
+    function deleteFavourite (s) {
+        const favourites = getFavourites();
+        favourites.delete(s.id);
+        localStorage.setItem('favourites', JSON.stringify([...favourites]));
+        
+    }
+
+    function getFavourites() {
+        return new Set(JSON.parse(localStorage.getItem('favourites') || '[]'));
+    }
+
+    function canAddFavourite() {
+        return getFavourites().size < 3;
+    }
 
     function appendChildAndSetInnerText(parent, tagName, innerText) {
         const tag = document.createElement(tagName);
