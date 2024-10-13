@@ -1,0 +1,18 @@
+.students-container {
+    display: flex;
+
+    flex-wrap: wrap;
+    gap: 5rem;
+}
+
+.student-card img{
+    height: 6rem;
+}
+
+/* .filter-by-faculties {
+    display: flex;
+} */
+
+.filter-by-faculties img{
+    max-height: 2rem;
+}
