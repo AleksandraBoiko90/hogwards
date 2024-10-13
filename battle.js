@@ -63,8 +63,14 @@ document.addEventListener('DOMContentLoaded', () => {
         await sleep(1);
         const spell = spells[getRandInt(spells.length)];
         danger(p.name + ' attacks with ' + spell.name);
-        const damage = getRandInt(100);
+        let damage = getRandInt(100);
+        if (p.hogwartsStaff) {
+            damage = Math.floor(damage * 1.1);
+        }
         o.hp -= damage;
+        if (o.hp < 0) {
+            o.hp = 0;
+        }
         danger(o.name  + ' loses ' + damage + ' hps');
         updatePlayerCard(getPlayerCard(o), o);
     }
