@@ -1,33 +1,61 @@
 document.addEventListener('DOMContentLoaded', function () {
     let studentsFromApi = [];
+    let filter = null;
+    let sortByAge = null;
+
     fetchStudents().then(displayStudents);
     initFilterByFaculty();
+    initSortByAge();
+
+    function initSortByAge() {
+        ascButton = document.querySelector('.sort-by-age-asc');
+        ascButton.onclick = (e) => sortByAgeAsc(e);
+        descButton = document.querySelector('.sort-by-age-desc');
+        descButton.onclick = (e) => sortByAgeDesc(e);
+        ascButton = document.querySelector('.sort-by-age-unsorted');
+        ascButton.onclick = (e) => sortByAgeUnsorted(e);
+    }
+
+    function sortByAgeAsc(e) {
+        e.preventDefault();
+        sortByAge = 'asc';
+        displayStudents();
+    }
+    function sortByAgeDesc(e) {
+        e.preventDefault();
+        sortByAge = 'desc';
+        displayStudents();
+    }
+    function sortByAgeUnsorted(e) {
+        e.preventDefault();
+        sortByAge = null;
+        displayStudents();
+    }
 
     function initFilterByFaculty() {
         const buttons = [...document.querySelectorAll('.filter-by-faculties a')];
         buttons.forEach(b => b.onclick = (e) => filterByFaculty(e, b));
         function filterByFaculty(e, b) {
             e.preventDefault();
-            let faculty;
             if (isChecked(b)) {
                 uncheck([b]);
-                faculty = null;
+                filter = null;
             } else {
                 check(b);
-                uncheck(buttons.filter(btn=>btn!==b));
-                faculty = b.getAttribute('data-faculty-name');
+                uncheck(buttons.filter(btn => btn !== b));
+                filter = b.getAttribute('data-faculty-name');
             }
 
-            displayStudents(faculty)
+            displayStudents()
 
         }
-        function uncheck(buttons){
-            buttons.forEach(b=> b.style.borderStyle = '');
+        function uncheck(buttons) {
+            buttons.forEach(b => b.style.borderStyle = '');
         }
-        function isChecked(b){
+        function isChecked(b) {
             return b.style.borderStyle !== '';
         }
-        function check(b){
+        function check(b) {
             b.style.borderStyle = 'solid'
         }
     }
@@ -55,15 +83,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
-    function displayStudents(faculty) {
+    function displayStudents() {
 
         const container = document.querySelector('.students-container');
 
-        let allStudents = studentsFromApi;
-        if (faculty) {
-            allStudents = allStudents.filter(s=>s.faculty.toLowerCase() === faculty);
+        let allStudents = [...studentsFromApi];
+        if (filter) {
+            allStudents = allStudents.filter(s => s.faculty.toLowerCase() === filter);
         }
-                    
+
+        if (sortByAge) {
+            switch (sortByAge) {
+                case 'asc':
+                    allStudents.sort((a,b) => a.age - b.age);
+                    break;
+                case 'desc':
+                    allStudents.sort((a,b) => b.age - a.age);
+                    break;
+
+                default:
+                    throw new Error("wrong sort direction: " + sortByAge);
+
+            }
+
+        }
         const newCards = allStudents.map(s => createStudentCard(s));
         container.replaceChildren(...newCards);
 
@@ -135,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function getBackgroundColor(faculty) {
-            const colors = {'gryffindor': 'orange', 'slytherin': 'green', 'hufflepuff': 'yellow', 'ravenclaw': 'blue'};
+            const colors = { 'gryffindor': 'orange', 'slytherin': 'green', 'hufflepuff': 'yellow', 'ravenclaw': 'blue' };
             return colors[faculty];
         }
 
