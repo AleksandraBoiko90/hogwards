@@ -78,6 +78,13 @@ document.addEventListener('DOMContentLoaded', function () {
         return addedStudents;
     }
 
+    function deleteAddedStudent(s) {
+        const addedStudents = getAddedStudents();
+        const n = addedStudents.indexOf(s);
+        addedStudents.splice(n,1);
+        localStorage.setItem('addedStudents', JSON.stringify(addedStudents));        
+    }
+
     function addUserStudent(s) {
         const addedStudents = getAddedStudents();
         addedStudents.push(s);
@@ -98,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 length: wand_length.value
             },
             isFavourite: false,
+            origin: 'added',
         }
     }
 
@@ -111,6 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
             alternate_names: s.alternate_names,
             wand: s.wand,
             isFavourite,
+            origin: 'api',
         }
     }
     function initSortByAge() {
@@ -192,6 +201,11 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
     }
+    
+    function deleteApiStudent(s) {
+        const n = studentsFromApi.indexOf(s);
+        studentsFromApi.splice(n,1);    
+    }
 
 
     function sortStudentsByAge(allStudents) {
@@ -247,7 +261,6 @@ document.addEventListener('DOMContentLoaded', function () {
         addAge();
         addWandDetails();
         addFaculty();
-        addSaveButton();
         addEditButton();
         addDeleteButton();
 
@@ -282,15 +295,26 @@ document.addEventListener('DOMContentLoaded', function () {
             card.appendChild(container);
         }
 
-        function addSaveButton() {
-            const tag = document.createElement('button');
-            tag.innerText = 'Save';
-            card.appendChild(tag);
-        }
-
         function addDeleteButton() {
             const tag = document.createElement('button');
             tag.innerText = 'Delete';
+            tag.onclick = () => {
+                switch (s.origin) {
+                    case 'api':
+                        deleteApiStudent(s);
+                        break;
+                    case 'added':
+                        deleteAddedStudent(s);
+                        break;
+                    default:
+                        throw new Error('unknown origin: ' + s.origin);
+                }
+                if (isFavourite(s)) {
+                    deleteFavourite(s);
+                }
+                displayStudents();
+            };
+
             card.appendChild(tag);
         }
 
@@ -360,6 +384,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const favourites = getFavourites();
         favourites.add(s.id);
         localStorage.setItem('favourites', JSON.stringify([...favourites]));
+    }
+
+    function isFavourite(s) {
+        const favourites = getFavourites();
+        return favourites.has(s.id);
     }
 
     function deleteFavourite(s) {
