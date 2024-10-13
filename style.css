@@ -13,9 +13,12 @@
     display: flex;
     gap: 1rem;
 }
-
+.filter-by-faculties a{
+    padding: 0.1rem;
+    border-style: none;
+    border: 0.15rem black  ;
+    border-radius: 20%; 
+}
 .filter-by-faculties img{
     max-height: 2rem;
-    border: 0.15rem black  ;
-    border-radius: 20%;
 }

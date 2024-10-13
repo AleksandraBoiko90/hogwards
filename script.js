@@ -1,7 +1,24 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let students = [];
+    let studentsFromApi = [];
     fetchStudents().then(displayStudents);
- 
+    initFilterByFaculty();
+
+    function initFilterByFaculty(){
+        const buttons = document.querySelectorAll('.filter-by-faculties a');
+        buttons.forEach(b=>b.onclick = (e) => filterByFaculty(e, b));
+    }
+
+    function filterByFaculty(e, b) {
+        e.preventDefault();
+        if (b.style.borderStyle) {
+            b.style.borderStyle = ''
+        } else {
+            b.style.borderStyle = 'solid'
+        }
+
+        const faculty = b.getAttribute('data-faculty-name');
+        
+    }
 
     function fetchStudents() {
         let url = 'https://hp-api.onrender.com/api/characters/students';
@@ -10,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 const currentYear = (new Date()).getFullYear();
-                students = data.map(s => {
+                studentsFromApi = data.map(s => {
                     return {
                         id: s.id,
                         name: s.name,
@@ -28,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayStudents() {
 
         const container = document.querySelector('.students-container');
-        students.forEach(s => {
+        studentsFromApi.forEach(s => {
             container.appendChild(createStudentCard(s));
         });
 
