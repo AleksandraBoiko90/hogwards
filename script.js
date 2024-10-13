@@ -17,9 +17,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         id: s.id,
                         name: s.name,
                         faculty: s.house,
-                        imageUrl: s.image,
+                        imageUrl: s.image || 'img/no_photo.jpg',
                         alternate_names: s.alternate_names,
-                        age: s.yearOfBirth? (currentYear - s.yearOfBirth) : '-',
+                        age: s.yearOfBirth ? currentYear - s.yearOfBirth : '-',
                         wand: s.wand
                     };
                 });
