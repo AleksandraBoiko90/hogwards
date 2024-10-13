@@ -48,12 +48,24 @@ document.addEventListener('DOMContentLoaded', function () {
         addName();
         addAlternativeNames();
         addAge();
+        addWandDetails();
         addFaculty();
         addSaveButton();
         addEditButton();
         addDeleteButton();
 
         return card;
+
+        function addWandDetails(){
+            const container = document.createElement('div');
+            appendChildAndSetInnerText(container, 'h4', 'wand');
+            const ul = document.createElement('ul');
+            Object.keys(s.wand).forEach((key) =>
+                appendChildAndSetInnerText(ul, 'li', `${key}: ${s.wand[key]}`));
+            container.appendChild(ul);
+            card.appendChild(container);
+
+        }
 
         function addAge() {
             appendChildAndSetInnerText(card, 'p', s.age);
