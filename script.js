@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         addImg();
         addName();
-        addAlternativeNames();
         addAge();
         addWandDetails();
         addFaculty();
@@ -54,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
         addEditButton();
         addDeleteButton();
 
+        addAlternativeNames();
         return card;
 
         function addWandDetails(){
