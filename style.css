@@ -9,10 +9,13 @@
     height: 6rem;
 }
 
-/* .filter-by-faculties {
+.filter-by-faculties {
     display: flex;
-} */
+    gap: 1rem;
+}
 
 .filter-by-faculties img{
     max-height: 2rem;
+    border: 0.15rem black  ;
+    border-radius: 20%;
 }
