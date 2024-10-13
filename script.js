@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const faculty = b.getAttribute('data-faculty-name');
+            displayStudents(faculty)
 
         }
         function uncheck(buttons){
@@ -52,12 +53,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
-    function displayStudents() {
+    function displayStudents(faculty) {
 
         const container = document.querySelector('.students-container');
-        studentsFromApi.forEach(s => {
-            container.appendChild(createStudentCard(s));
-        });
+
+        let allStudents = studentsFromApi;
+        if (faculty) {
+            allStudents = allStudents.filter(s=>s.faculty.toLowerCase() === faculty);
+        }
+                    
+        const newCards = allStudents.map(s => createStudentCard(s));
+        container.replaceChildren(...newCards);
 
     }
 
