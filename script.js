@@ -70,7 +70,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getAddedStudents() {
-        return JSON.parse(localStorage.getItem('addedStudents') || '[]');
+        const favourites = getFavourites();
+        const addedStudents = JSON.parse(localStorage.getItem('addedStudents') || '[]');
+        addedStudents.forEach(s => s.isFavourite = favourites.has(s.id));
+        return addedStudents;
     }
 
     function addUserStudent(s) {
@@ -96,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function makeStudentFromApi(s, currentYear) {
+    function makeStudentFromApi(s, currentYear, isFavourite) {
         return {
             id: s.id,
             name: s.name,
@@ -105,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
             imageUrl: s.image || 'img/no_photo.jpg',
             alternate_names: s.alternate_names,
             wand: s.wand,
-            isFavourite: false,
+            isFavourite,
         }
     }
     function initSortByAge() {
@@ -169,10 +172,11 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 const currentYear = (new Date()).getFullYear();
+                const favourites = getFavourites();
                 studentsFromApi = data
                     // .slice(0, 5)
                     .map(s => {
-                        return makeStudentFromApi(s, currentYear);
+                        return makeStudentFromApi(s, currentYear, favourites.has(s.id));
                     });
             });
 
@@ -201,8 +205,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayStudents() {
 
         const container = document.querySelector('.students-container');
-
         let allStudents = [...getAddedStudents(), ...studentsFromApi];
+
         if (filter) {
             allStudents = allStudents.filter(s => s.faculty.toLowerCase() === filter);
         }
@@ -340,11 +344,11 @@ document.addEventListener('DOMContentLoaded', function () {
         favourites.add(s.id);
         localStorage.setItem('favourites', JSON.stringify([...favourites]));
     }
-    function deleteFavourite (s) {
+    function deleteFavourite(s) {
         const favourites = getFavourites();
         favourites.delete(s.id);
         localStorage.setItem('favourites', JSON.stringify([...favourites]));
-        
+
     }
 
     function getFavourites() {
