@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
     let studentsFromApi = [];
     let filter = null;
+    let filterByFavourites = false;
     let sortByAge = null;
 
     fetchStudents().then(displayStudents);
     initFilterByFaculty();
+    initFilterByFavourites();
     initSortByAge();
     initAddStudent();
 
@@ -21,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const clearButton = document.querySelector('.clear-user-students');
         clearButton.onclick = (e) => {
             e.preventDefault();
-            clearUserStudents();
+            clearAddedStudents();
         };
 
         addEditStudentForm.onsubmit = onAddEditStudentFormSubmit;
@@ -64,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
-    function clearUserStudents() {
+    function clearAddedStudents() {
         localStorage.setItem('addedStudents', JSON.stringify([]));
         displayStudents();
     }
@@ -164,6 +166,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function initFilterByFavourites() {
+        const b = document.querySelector('.filter-by-favourites');
+        b.onclick = () => { 
+            filterByFavourites = !filterByFavourites;
+            b.innerText = getFavouritedInnerText(filterByFavourites);
+            displayStudents();
+
+        };
+    }
 
     function fetchStudents() {
         let url = 'https://hp-api.onrender.com/api/characters/students';
@@ -207,9 +218,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const container = document.querySelector('.students-container');
         let allStudents = [...getAddedStudents(), ...studentsFromApi];
 
+        if (filterByFavourites) {
+            allStudents = allStudents.filter(s => s.isFavourite);            
+        }
+
         if (filter) {
             allStudents = allStudents.filter(s => s.faculty.toLowerCase() === filter);
         }
+
 
         sortStudentsByAge(allStudents);
 
@@ -324,6 +340,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function getFavouritedInnerText(isFavourite) {
         return isFavourite ? '♥️' : '♡'
     }
+    
     function toggleFavourite(s, tag) {
 
         if (!s.isFavourite && !canAddFavourite()) {
@@ -344,6 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
         favourites.add(s.id);
         localStorage.setItem('favourites', JSON.stringify([...favourites]));
     }
+
     function deleteFavourite(s) {
         const favourites = getFavourites();
         favourites.delete(s.id);

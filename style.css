@@ -25,6 +25,15 @@ nav {
     max-height: 2rem;
 }
 
+.filter-by-favourites {
+    font-size: 3rem;
+    color: red;
+}
+
+.filter-by-favourites {
+    cursor: pointer;
+}
+
 .students-container {
     display: flex;
 
