@@ -67,6 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (p.hogwartsStaff) {
             damage = Math.floor(damage * 1.1);
         }
+        if (p.hp < 100) {
+            success('damage increased since ' + p.name + ' has less than 100 HP');
+            damage = Math.floor(damage * 1.1);            
+        }
         o.hp -= damage;
         if (o.hp < 0) {
             o.hp = 0;
